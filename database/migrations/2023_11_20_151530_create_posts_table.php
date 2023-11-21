@@ -13,6 +13,19 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id()->from(startingValue: 1000);
+            $table->unsignedBigInteger('user_id');
+
+            /*One way*/
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->cascadeOnDelete(); // when a user will delete, all post with user id will delete
+
+            /*Another way*/
+//            $table->foreignId('user_id')
+//                ->constrained('users')
+//                ->cascadeOnDelete();
+
             $table->string(column: 'title')->unique();
             $table->string(column: 'slug')->unique();
             $table->text(column: 'excerpt')->comment(comment: 'Summary of the post');
