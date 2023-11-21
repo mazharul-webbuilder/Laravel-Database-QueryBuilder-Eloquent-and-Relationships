@@ -1,0 +1,17 @@
+[
+    {
+        "title": "Post one through seeder",
+        "slug": "Post-one-through-seeder",
+        "content": "Lorem Ipsum",
+        "excerpt": "Just a excerpt",
+        "is_published": true,
+        "min_to_read": 4
+    },{
+        "title": "Post two through seeder",
+        "slug": "Post-two-through-seeder",
+        "content":  "Lorem Ipsum",
+        "excerpt": "Just a excerpt",
+        "is_published": true,
+        "min_to_read": 5
+    }
+]
