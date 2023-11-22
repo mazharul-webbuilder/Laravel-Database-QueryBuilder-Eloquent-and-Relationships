@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -10,7 +11,7 @@ class PostsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index():void
     {
         $posts = DB::table('posts')->select('excerpt as summary', 'content')->get();
         $posts = DB::table('posts')->pluck('id'); // return array of all posts id's
@@ -29,6 +30,36 @@ class PostsController extends Controller
         $max = DB::table('posts')->max('min_to_read');
         $min = DB::table('posts')->min('min_to_read');
 
+        /*Chunking*/
+        DB::table('posts')
+            ->orderBy('id')
+            ->chunk(100, function ($posts){
+                foreach ($posts as $post) {
+                    // perform your action with $post
+                }
+            });
+
+        /*lazy method use for load large number of data without consuming more  memory on server, work like chunk*/
+        DB::table('posts')
+            ->orderBy('id')
+            ->lazy()
+            ->each(function ($post){
+               // perform you action with $post
+            });
+
+        /*Write RAW query using Query Builder*/
+        DB::table('posts')
+            ->selectRaw('count(*) as post_count')->first(); //output post_count 20
+
+        DB::table('posts')
+            ->whereRaw('created_at > NOW() - INTERVAL 1 DAY')
+            ->first();
+
+        DB::table('posts')
+            ->select('user_id', DB::raw('SUM (min_to_read) as total_time'))
+            ->groupBy('user_id')
+            ->havingRaw('SUM(min_to_read) > 10')
+            ->get();
     }
 
     /**
@@ -58,6 +89,20 @@ class PostsController extends Controller
             ->insertGetId([
 
             ]);
+
+        /*Transaction*/
+        DB::transaction(function (){
+           DB::table('users')
+               ->where('id', 1002)
+               ->lockForUpdate() // without complete the transaction nobody can perform operation on this user until transaction complete
+               ->decrement(10);
+
+
+           DB::table('users')
+               ->where('id', 1003)
+               ->sharedLock() // same as lockForUpdate, difference is data can read only
+               ->increment(10);
+        });
     }
 
     /**
