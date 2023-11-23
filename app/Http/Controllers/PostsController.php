@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use function Laravel\Prompts\error;
 
 class PostsController extends Controller
 {
@@ -60,6 +61,36 @@ class PostsController extends Controller
             ->groupBy('user_id')
             ->havingRaw('SUM(min_to_read) > 10')
             ->get();
+
+        DB::table('posts')->orderBy('title', 'DESC')->orderBy('min_to_read')->get();
+
+        DB::table('posts')->latest('title')->get();
+
+        DB::table('posts')->oldest('min_to_read')->get();
+
+        /*Search Large text*/
+        DB::table('users')->whereFullText('content', 'a pieces of text from content') // content column  must be fullText type in database, otherwise it will not wok
+            ->get();
+
+        /*Limit*/
+        DB::table('posts')->limit(10)->get(); // will only retrieve first 10 row
+
+        /*Offset*/
+        DB::table('posts')
+            ->offset(10) // offset will skip first 10 record
+            ->limit(10) // will return data from 11th to 20th
+            ->get();
+
+        /*When*/
+        DB::table('posts')
+            ->when(function ($query){
+                return $query->where('is_published', true);
+            })->get();
+
+        /*Pagination*/
+        DB::table('posts')
+            ->paginate(25);
+
     }
 
     /**
