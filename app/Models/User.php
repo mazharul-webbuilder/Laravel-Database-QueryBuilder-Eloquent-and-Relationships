@@ -48,4 +48,54 @@ class User extends Authenticatable
     {
         static::addGlobalScope(new BalaceVerifiedScope());
     }
+
+    /*Relations=========================================================================*/
+
+    /**
+     * Singular relation method name represent single record relationship with other table
+     *
+     * $this keyword represent current method instance, in this hasone case $this represent instance of a $user
+     *
+    */
+    /*====================================================================================*/
+    public function contact(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(related: Contact::class, foreignKey: 'user_id', localKey: 'id');
+    }
+
+    public function posts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(related: Post::class, foreignKey: 'user_id', localKey: 'id');
+    }
+
+    /**
+     * For through relation naming convention is models name should use alphabetical order
+     *
+     * as below between company and phoneNumber alphabetically company model come first then phoneNumber model
+    */
+    public function companyPhoneNumber(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
+    {
+        return $this->hasOneThrough(
+            related: PhoneNumber::class, // Data we want from
+            through: Company::class,     // Which Through we reach the data Model
+            firstKey: 'user_id',        // foreign_key of Through table
+            secondKey: 'company_id',    // foreign_key of Related class
+            localKey: 'id',
+            secondLocalKey: 'id'
+        );
+    }
+
+    /**
+     *Has one of many relation
+    */
+    public function latestJob(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(related: Job::class)->latestOfMany();
+    }
+
+    public function oldestJob(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(related: Job::class)->oldestOfMany();
+    }
+    /*Relations=========================================================================*/
 }

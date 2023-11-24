@@ -94,4 +94,17 @@ class Post extends Model
 //        Post::publishedByUser($userId)->get(); // Can use like that on controller
     }
 
+
+    /*Relations================================================================================*/
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(related: User::class, foreignKey: 'user_id', ownerKey: 'id');
+    }
+
+    public function tags(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(related: Tag::class, table: 'post_tag');
+    }
+    /*Relations================================================================================*/
+
 }
