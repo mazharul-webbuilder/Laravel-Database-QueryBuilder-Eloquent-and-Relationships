@@ -91,6 +91,11 @@ class PostsController extends Controller
         DB::table('posts')
             ->paginate(25);
 
+        /*CursorPaginate*/
+        DB::table('posts')
+            ->orderBy('id') // Must have to use orderBy method when use cursorPaginate()
+            ->cursorPaginate(); // Use for retrieve large amount of data, faster that regular paginates methode
+
     }
 
     /**
