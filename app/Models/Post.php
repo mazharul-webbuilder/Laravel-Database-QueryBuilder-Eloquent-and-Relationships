@@ -105,6 +105,11 @@ class Post extends Model
     {
         return $this->belongsToMany(related: Tag::class, table: 'post_tag');
     }
+
+    public function image(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    {
+        return $this->morphOne(related: Image::class, name: 'imageable');
+    }
     /*Relations================================================================================*/
 
 }
